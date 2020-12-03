@@ -25,10 +25,17 @@ public abstract class AbstractMulti<T> implements Multi<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void subscribe(Subscriber<? super T> subscriber) {
         // NOTE The Reactive Streams TCK mandates throwing an NPE.
         Objects.requireNonNull(subscriber, "Subscriber is `null`");
-        this.subscribe(new StrictMultiSubscriber<>(subscriber));
+        MultiSubscriber<? super T> actual;
+        if (subscriber instanceof MultiSubscriber) {
+            actual = (MultiSubscriber<? super T>) subscriber;
+        } else {
+            actual = new StrictMultiSubscriber<>(subscriber);
+        }
+        this.subscribe(actual);
     }
 
     @Override
