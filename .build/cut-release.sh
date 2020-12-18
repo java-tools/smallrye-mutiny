@@ -34,7 +34,7 @@ if [[ ! -z "${RELEASE_VERSION}" ]]; then
   EXTRA_PRE_ARGS="${EXTRA_PRE_ARGS} --release-version=${RELEASE_VERSION}"
 fi
 
-jbang .build/PreRelease.java --token="${GITHUB_TOKEN}" "${EXTRA_PRE_ARGS}"
+jbang .build/PreRelease.java --token="${GITHUB_TOKEN}" ${EXTRA_PRE_ARGS}
 
 export RELEASE_VERSION=""
 if [ -f /tmp/release-version ]; then
