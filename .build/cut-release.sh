@@ -53,7 +53,12 @@ git checkout -b "r${VERSION}" "${HASH}"
 
 echo "Update version to ${VERSION}"
 mvn -B versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false -s maven-settings.xml
-mvn -B clean verify -Prelease -s maven-settings.xml
+
+if [[ ${SKIP_TESTS} == "true" ]]; then
+  mvn -B clean verify -Prelease -DskipTests -s maven-settings.xml
+else
+  mvn -B clean verify -Prelease -s maven-settings.xml
+fi
 
 echo "Update website version to ${VERSION}"
 sed -ie "s/mutiny_version: .*/mutiny_version: ${VERSION}/g" documentation/src/main/jekyll/_data/versions.yml
