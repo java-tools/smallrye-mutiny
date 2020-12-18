@@ -18,7 +18,7 @@ init_git() {
 init_git
 init_gpg
 
-export RELEASE_VERSION=""
+export VERSION=""
 export BRANCH="HEAD"
 export EXTRA_PRE_ARGS=""
 
@@ -36,29 +36,29 @@ fi
 
 jbang .build/PreRelease.java --token="${GITHUB_TOKEN}" ${EXTRA_PRE_ARGS}
 
-export RELEASE_VERSION=""
+export VERSION=""
 if [ -f /tmp/release-version ]; then
-  RELEASE_VERSION=$(cat /tmp/release-version)
+  VERSION=$(cat /tmp/release-version)
 else
     echo "'/tmp/release-version' expected after pre-release"
     exit 1
 fi
 
-echo "Cutting release ${RELEASE_VERSION}"
+echo "Cutting release ${VERSION}"
 mvn -B -fn clean
 git checkout ${BRANCH}
 HASH=$(git rev-parse --verify $BRANCH)
 echo "Last commit is ${HASH} - creating detached branch"
-git checkout -b "r${RELEASE_VERSION}" "${HASH}"
+git checkout -b "r${VERSION}" "${HASH}"
 
-echo "Update version to ${RELEASE_VERSION}"
-mvn -B versions:set -DnewVersion="${RELEASE_VERSION}" -DgenerateBackupPoms=false -s maven-settings.xml
+echo "Update version to ${VERSION}"
+mvn -B versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false -s maven-settings.xml
 mvn -B clean verify -Prelease -s maven-settings.xml
 
-echo "Update website version to ${RELEASE_VERSION}"
-sed -ie "s/mutiny_version: .*/mutiny_version: ${RELEASE_VERSION}/g" documentation/src/main/jekyll/_data/versions.yml
+echo "Update website version to ${VERSION}"
+sed -ie "s/mutiny_version: .*/mutiny_version: ${VERSION}/g" documentation/src/main/jekyll/_data/versions.yml
 
-git commit -am "[RELEASE] - Bump version to ${RELEASE_VERSION}"
-git tag "${RELEASE_VERSION}"
+git commit -am "[RELEASE] - Bump version to ${VERSION}"
+git tag "${VERSION}"
 echo "Pushing tag to origin"
-# git push origin "${RELEASE_VERSION}"
+# git push origin "${VERSION}"
